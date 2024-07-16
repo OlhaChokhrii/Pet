@@ -59,16 +59,13 @@ public class PetSteps {
                .build();
     }
 
-    public static Pet update_Pet (Pet pet)  {
-        return (Pet) given()
+    public static Response update_Pet (Pet pet)  {
+        return given()
                 .contentType(ContentType.JSON)
                 .body(pet)
                 .when()
-                .put("/pet/{petId}")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(Pet.class);
+                .put("https://petstore.swagger.io/v2/pet")
+                .andReturn();
     //update_Pet(long petId, String jsonBody) {
         //PetMethod.updatePet(jsonBody)
                 //.then()

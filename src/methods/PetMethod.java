@@ -22,10 +22,10 @@ public class PetMethod {
                 .get("/pet/findByStatus");
     }
 
-    public static Response updatePet(String jsonBody) {
+    public static Response updatePet(Pet pet) {
         return RestAssured.given()
                 .header("Content-Type", "application/json")
-                .body(jsonBody)
+                .body(pet)
                 .when()
                 .put("/pet");
     }

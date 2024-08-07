@@ -11,18 +11,17 @@ import methods.PetMethod;
 import models.Tag;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import static Enums.PetStatus.*;
 import static io.restassured.RestAssured.given;
-import static methods.PetMethod.findPetsByStatus;
+import static methods.PetMethod.*;
 
 public class PetSteps {
 
     public static Pet find_PetById(long petId) {
-        return given()
-                .pathParam("petId", petId)
-                .when()
-                .get("/pet/{petId}")
+        return getPetById(petId)
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -39,18 +38,15 @@ public class PetSteps {
                 .as(new TypeRef<List<Pet>>() {});
     }
     public static Pet add_Pet(Pet pet) {
-        return given()
-                .contentType(ContentType.JSON)
-                .body(pet)
-                .when()
-                .post("/pet")
+        return addPet(pet)
                 .then()
                 .extract()
                 .as(Pet.class);
     }
    public static Pet petDTO() {
+       Random random = new Random();
         return Pet.builder()
-               .id(98765)
+               .id(random.nextLong())
                .name("Rex")
                .category(Category.builder().id(1).name("Dogs").build())
                .photoUrls(Arrays.asList("url1", "url2"))
@@ -59,8 +55,15 @@ public class PetSteps {
                .build();
     }
 
-    public static Response update_Pet (Pet pet)  {
-        return given()
+    public static Response update_Pet (Pet pet) {
+        return PetMethod.updatePet(pet)
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .extract()
+                .response();
+    }
+      /*          given()
                 .contentType(ContentType.JSON)
                 .body(pet)
                 .when()
@@ -71,7 +74,7 @@ public class PetSteps {
                 //.then()
                // .assertThat()
                // .statusCode(200);
-    }
+*/
 
     public static void delete_Pet(long petId) {
         PetMethod.deletePet(petId)
@@ -81,6 +84,3 @@ public class PetSteps {
 
     }
 }
-
-
-

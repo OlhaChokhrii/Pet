@@ -8,7 +8,7 @@ import models.Pet;
 public class PetMethod {
 
     public static Response addPet(Pet pet ) {
-        return RestAssured .given()
+        return RestAssured.given()
                 .header("Content-Type", "application/json")
                 .body(pet)
                 .when()

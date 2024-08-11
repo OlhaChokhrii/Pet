@@ -68,8 +68,6 @@ public class PetTests {
             pet = PetSteps.add_Pet(petDTO);
             Pet updatedPetDTO = petDTO.setName("New name");
             Response response = PetSteps.update_Pet(updatedPetDTO);
-            System.out.println("Expected ID: " + updatedPetDTO.getId());
-            System.out.println("Actual ID from Response: " + response.jsonPath().getLong("id"));
             response.then()
                     .statusCode(200)
                     .body("name", equalTo(updatedPetDTO.getName()))
@@ -164,15 +162,8 @@ public class PetTests {
     public void deletePetTest_Negative() {
         long nonExistentPetId = 123456789;
         Response response = PetMethod.deletePet(nonExistentPetId);
-        try {
             assertEquals(404, response.getStatusCode(), "Expected status code 404");
-            response.then()
-                    .statusCode(404);
-        } finally {
-            if (response.getStatusCode()==404) {
-                System.out.println("Cleaning up after unsuccessful deletion with non-existent pet ID");
-            }
-        }
+            response.then().statusCode(404);
     }
 
 }

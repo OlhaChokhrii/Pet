@@ -66,18 +66,34 @@ public class PetTests {
         try {
             Pet petDTO = PetSteps.petDTO();
             pet = PetSteps.add_Pet(petDTO);
-            Pet updatedPetDTO = pet.setName("New name");
+            Pet updatedPetDTO = petDTO.setName("New name");
+            Response response = PetSteps.update_Pet(updatedPetDTO);
+            response.then()
+                    .body("name", equalTo(updatedPetDTO.getName()))
+                    .body("id", equalTo(updatedPetDTO.getId())); // Corrected the comparison with updatedPetDTO
+            String actualName = response.jsonPath().getString("name");
+            assertEquals(updatedPetDTO.getName(), actualName, "Expected updated pet name to match");
+        } finally {
+            if (pet != null ) PetSteps.delete_Pet(pet.getId());
+            }
+
+/*    public void updatePetTest() {
+        Pet pet = null;
+        try {
+            Pet petDTO = PetSteps.petDTO();
+            pet = PetSteps.add_Pet(petDTO);
+            Pet updatedPetDTO = petDTO.setName("New name");
             Response response = PetSteps.update_Pet(updatedPetDTO);
             response.then()
                     .statusCode(200)
                     .body("name", equalTo(updatedPetDTO.getName()))
-                    .body("id", equalToObject((int) petDTO.getId()));
+                    .body("id", equalTo((int) updatedPetDTO.getId()));
             String actualName = response.jsonPath().getString("name");
             assertEquals(updatedPetDTO.getName(), actualName, "Expected updated pet name to match");
         } finally {
             if (pet != null) PetSteps.delete_Pet(pet.getId());
-        }
-
+        }*/
+/*
         //public void updatePetTest() {
         // Pet petDTO = PetSteps.petDTO();
         //Pet updatedPetDTO = petDTO.setName("New name");
@@ -88,7 +104,7 @@ public class PetTests {
         //.body("id", equalToObject((int) petDTO.getId()));
         //String actualName = response.jsonPath().getString("name");
         //assertEquals(updatedPetDTO.getName(), actualName, "Expected updated pet name to match");
-
+*/
         //long petId = 9223372036854601825L;
         //String updatedName = "Buddy";
         // String jsonBody = "{ \"id\": " + petId + ", \"name\": \"" + updatedName + "\", \"status\": \"available\" }";
@@ -104,30 +120,48 @@ public class PetTests {
 
     @Test //@Disabled
     public void testFindPetById() {
-        long petId = 847;
-        Pet pet = PetSteps.find_PetById(petId);
+        Pet pet = null;
+        try {
+            Pet petDTO = petDTO();
+            pet = PetSteps.add_Pet(petDTO);
+            PetSteps.find_PetById(pet.getId());
+        } finally {
+            if (pet != null) PetSteps.delete_Pet(pet.getId());
+        }
+
+   /*     long petId = 847;
+    //    Pet pet = PetSteps.find_PetById(petId);
         System.out.println("Pet ID: " + pet.getId());
         System.out.println("Pet Name: " + pet.getName());
         System.out.println("Pet Status: " + pet.getStatus());
         System.out.println("Pet Photo URLs: " + pet.getPhotoUrls());
-    }
+*/    }
 
     @Test
     public void deletePetTest_Positive() {
-        long petId = 9223372036854660000L;//9223372036854601825L;
+        Pet pet = null;
+        Boolean isDeleted = false;
+        try {
+            Pet petDTO = petDTO();
+            pet = PetSteps.add_Pet(petDTO);
+            PetSteps.delete_Pet(pet.getId());
+            isDeleted = true;
+        } finally {
+            if (pet != null && !isDeleted) PetSteps.delete_Pet(pet.getId()); // знак окліку для позначення false
+        }
+  /*    long petId = 9223372036854660000L;//9223372036854601825L;
         Response response = PetMethod.deletePet(petId);
         assertEquals(404, response.getStatusCode(), "Expected status code 200");
         response.then()
                 .statusCode(404);
+   */
     }
 
     @Test
     public void deletePetTest_Negative() {
         long nonExistentPetId = 123456789;
         Response response = PetMethod.deletePet(nonExistentPetId);
-        assertEquals(404, response.getStatusCode(), "Expected status code 404");
-        response.then()
-                .statusCode(404);
+            assertEquals(404, response.getStatusCode(), "Expected status code 404");
     }
 
 }

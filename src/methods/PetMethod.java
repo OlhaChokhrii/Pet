@@ -8,7 +8,7 @@ import models.Pet;
 public class PetMethod {
 
     public static Response addPet(Pet pet ) {
-        return RestAssured .given()
+        return RestAssured.given()
                 .header("Content-Type", "application/json")
                 .body(pet)
                 .when()
@@ -22,10 +22,10 @@ public class PetMethod {
                 .get("/pet/findByStatus");
     }
 
-    public static Response updatePet(String jsonBody) {
+    public static Response updatePet(Pet pet) {
         return RestAssured.given()
                 .header("Content-Type", "application/json")
-                .body(jsonBody)
+                .body(pet)
                 .when()
                 .put("/pet");
     }

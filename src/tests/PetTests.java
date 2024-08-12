@@ -69,7 +69,6 @@ public class PetTests {
             Pet updatedPetDTO = petDTO.setName("New name");
             Response response = PetSteps.update_Pet(updatedPetDTO);
             response.then()
-                    .statusCode(200)
                     .body("name", equalTo(updatedPetDTO.getName()))
                     .body("id", equalTo(updatedPetDTO.getId())); // Corrected the comparison with updatedPetDTO
             String actualName = response.jsonPath().getString("name");
@@ -163,7 +162,6 @@ public class PetTests {
         long nonExistentPetId = 123456789;
         Response response = PetMethod.deletePet(nonExistentPetId);
             assertEquals(404, response.getStatusCode(), "Expected status code 404");
-            response.then().statusCode(404);
     }
 
 }

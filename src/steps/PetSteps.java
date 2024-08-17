@@ -9,6 +9,8 @@ import models.Category;
 import models.Pet;
 import methods.PetMethod;
 import models.Tag;
+import net.datafaker.Faker;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -44,15 +46,21 @@ public class PetSteps {
                 .as(Pet.class);
     }
    public static Pet petDTO() {
-       Random random = new Random();
+       Faker faker = new Faker();
         return Pet.builder()
-               .id(random.nextLong())
-               .name("Rex")
-               .category(Category.builder().id(1).name("Dogs").build())
-               .photoUrls(Arrays.asList("url1", "url2"))
-               .tags(Arrays.asList(Tag.builder().id(1).name("tag1").build()))
-               .status(available)
-               .build();
+                .id(faker.number().randomNumber(10, false)) // можна і без значень в скобках, то просто задаємо к-сть символів 10
+                .name(faker.animal().name())
+                .category(Category.builder()
+                        .id(faker.number().randomNumber(7, false))
+                        .name(faker.animal().name()) // Use Faker for category name
+                        .build())
+                .photoUrls(Arrays.asList(faker.internet().url(), faker.internet().url()))
+                .tags(Arrays.asList(
+                        Tag.builder().id(faker.number().randomNumber(5, false)).name(faker.color().name()).build(),
+                        Tag.builder().id(faker.number().randomNumber(7, false)).name(faker.color().name()).build()
+                ))
+                .status(available)
+                .build();
     }
 
     public static Response update_Pet (Pet pet) {
@@ -63,24 +71,11 @@ public class PetSteps {
                 .extract()
                 .response();
     }
-      /*          given()
-                .contentType(ContentType.JSON)
-                .body(pet)
-                .when()
-                .put("https://petstore.swagger.io/v2/pet")
-                .andReturn();
-    //update_Pet(long petId, String jsonBody) {
-        //PetMethod.updatePet(jsonBody)
-                //.then()
-               // .assertThat()
-               // .statusCode(200);
-*/
 
     public static void delete_Pet(long petId) {
         PetMethod.deletePet(petId)
                 .then()
                 .assertThat()
                 .statusCode(200);
-
     }
 }

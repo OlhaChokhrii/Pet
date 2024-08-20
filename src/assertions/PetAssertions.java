@@ -21,18 +21,11 @@ public class PetAssertions {
                 );
     }
 
-    public static void verifyPetName(Response response, Pet updatedPetDTO) {
-        response.then()
-                .body("name", equalTo(updatedPetDTO.getName()));
-        String actualName = response.jsonPath().getString("name");
-        assertThat(actualName, equalTo(updatedPetDTO.getName()));
-    }
-
     public static void verifyPetId(Pet pet, long expectedId) {
         assertThat(pet.getId(), equalTo(expectedId));
     }
 
-    public static void verifyDeletePet(Response response, int expectedStatusCode) {
+    public static void verifyPetNotFound(Response response, int expectedStatusCode) {
         assertThat(response.getStatusCode(), equalTo(expectedStatusCode));
       }
     }

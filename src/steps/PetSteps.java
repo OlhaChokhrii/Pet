@@ -63,13 +63,13 @@ public class PetSteps {
                 .build();
     }
 
-    public static Response update_Pet (Pet pet) {
+    public static Pet update_Pet (Pet pet) {
         return PetMethod.updatePet(pet)
                 .then()
                 .assertThat()
                 .statusCode(200)
                 .extract()
-                .response();
+                .as(Pet.class);
     }
 
     public static void delete_Pet(long petId) {

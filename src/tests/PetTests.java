@@ -36,7 +36,6 @@ public class PetTests {
             Pet petDTO = petDTO();
             pet = PetSteps.add_Pet(petDTO);
             PetAssertions.verifyPetWasCreated(petDTO, pet);
-            PetAssertions.verifyPetId(pet, petDTO.getId());
         } finally {
             if (pet != null) PetSteps.delete_Pet(pet.getId());
         }
@@ -60,9 +59,10 @@ public class PetTests {
             Pet petDTO = PetSteps.petDTO();
             pet = PetSteps.add_Pet(petDTO);
             Pet updatedPetDTO = petDTO.setName("New name");
-            Response response = PetSteps.update_Pet(updatedPetDTO);
-            PetAssertions.verifyPetName(response, updatedPetDTO);
-            PetAssertions.verifyPetId(pet, updatedPetDTO.getId());
+            Pet response = PetSteps.update_Pet(updatedPetDTO);
+            /*PetAssertions.verifyPetName(response, updatedPetDTO);
+            PetAssertions.verifyPetId(pet, updatedPetDTO.getId());*/
+            PetAssertions.verifyPetWasCreated(response,updatedPetDTO);
         } finally {
             if (pet != null ) PetSteps.delete_Pet(pet.getId());
             }
@@ -75,6 +75,7 @@ public class PetTests {
             Pet petDTO = petDTO();
             pet = PetSteps.add_Pet(petDTO);
             PetSteps.find_PetById(pet.getId());
+            PetAssertions.verifyPetId(pet, petDTO.getId());
         } finally {
             if (pet != null) PetSteps.delete_Pet(pet.getId());
         }
@@ -90,16 +91,15 @@ public class PetTests {
             PetSteps.delete_Pet(pet.getId());
             isDeleted = true;
         } finally {
-            if (pet != null && !isDeleted) PetSteps.delete_Pet(pet.getId()); // знак окліку для позначення false
+            if (pet != null && !isDeleted) PetSteps.delete_Pet(pet.getId()); // знак оклику для позначення false
         }
-
     }
 
     @Test
     public void deletePetTest_Negative() {
         long nonExistentPetId = 123456789;
         Response response = PetMethod.deletePet(nonExistentPetId);
-        PetAssertions.verifyDeletePet(response, 404);
+        PetAssertions.verifyPetNotFound(response, 404);
     }
 
 }

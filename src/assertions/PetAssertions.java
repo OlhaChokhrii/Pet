@@ -2,12 +2,9 @@ package assertions;
 import Enums.PetStatus;
 import io.restassured.response.Response;
 import models.Pet;
-
 import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PetAssertions {
 

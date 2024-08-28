@@ -1,7 +1,6 @@
 package tests;
 import assertions.PetAssertions;
 import models.Pet;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import Enums.PetStatus;
 import io.restassured.RestAssured;
@@ -9,16 +8,17 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import methods.PetMethod;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.equalToObject;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static steps.PetSteps.find_PetsByStatus;
 import static steps.PetSteps.petDTO;
-
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import steps.PetSteps;
-
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PetTests {
 
@@ -40,8 +40,24 @@ public class PetTests {
             if (pet != null) PetSteps.delete_Pet(pet.getId());
         }
     }
+  // Я знаю, що не добре в тести вставляти метод, але хочу з тобою порадитись де краще його помістити
+    public static Stream<Arguments> negativeCasesCreatePet() {
+        return Stream.of(
+                Arguments.of("empty pet name", petDTO().setName(null)),
+                Arguments.of("negative id", petDTO().setId(-1)),
+                Arguments.of("empty pet category", petDTO().setCategory(null)),
+                Arguments.of("empty pet status", petDTO().setStatus(null))
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("negativeCasesCreatePet")
+    public void post_AddNewPet_400(String testName, Pet petDTO) {
+        Response response = PetMethod.addPet(petDTO);
+        PetAssertions.verifyPetNotFound(response, 400);
+    }
 
-    @Test
+
+   /* @Test
     public void findPetsByStatusTest() {
         PetStatus status = PetStatus.available;
         List<Pet> pets = find_PetsByStatus(status);
@@ -51,6 +67,17 @@ public class PetTests {
         System.out.println("First Pet Status: " + firstPet.getStatus());
         PetAssertions.verifyAllPetsByStatus(pets, status);
     }
+    */
+   @ParameterizedTest
+   @EnumSource(value = PetStatus.class, mode = EnumSource.Mode.EXCLUDE, names = {"sold", "pending"})
+   void findPetsByStatus(PetStatus status) {
+       List<Pet> pets = find_PetsByStatus(status);
+       Pet firstPet = pets.get(0);
+       System.out.println("First Pet ID: " + firstPet.getId());
+       System.out.println("First Pet Name: " + firstPet.getName());
+       System.out.println("First Pet Status: " + firstPet.getStatus());
+       PetAssertions.verifyAllPetsByStatus(pets, status);
+   }
 
     @Test
     public void updatePetTest() {
@@ -60,12 +87,10 @@ public class PetTests {
             pet = PetSteps.add_Pet(petDTO);
             Pet updatedPetDTO = petDTO.setName("New name");
             Pet response = PetSteps.update_Pet(updatedPetDTO);
-            /*PetAssertions.verifyPetName(response, updatedPetDTO);
-            PetAssertions.verifyPetId(pet, updatedPetDTO.getId());*/
-            PetAssertions.verifyPetWasCreated(response,updatedPetDTO);
+            PetAssertions.verifyPetWasCreated(response, updatedPetDTO);
         } finally {
-            if (pet != null ) PetSteps.delete_Pet(pet.getId());
-            }
+            if (pet != null) PetSteps.delete_Pet(pet.getId());
+        }
     }
 
     @Test //@Disabled
@@ -95,13 +120,19 @@ public class PetTests {
         }
     }
 
-    @Test
-    public void deletePetTest_Negative() {
-        long nonExistentPetId = 123456789;
-        Response response = PetMethod.deletePet(nonExistentPetId);
+    /* @Test
+     public void deletePetTest_Negative() {
+         long nonExistentPetId = 123456789;
+         Response response = PetMethod.deletePet(nonExistentPetId);
+         PetAssertions.verifyPetNotFound(response, 404);
+     }
+
+ }*/
+    @ParameterizedTest
+    @ValueSource(longs = {1, 2, 3})
+    void deletePetTest_Negative(long id ) {
+        Response response = PetMethod.deletePet(id);
         PetAssertions.verifyPetNotFound(response, 404);
     }
-
 }
-
 

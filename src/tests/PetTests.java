@@ -40,7 +40,7 @@ public class PetTests {
             if (pet != null) PetSteps.delete_Pet(pet.getId());
         }
     }
-  // Я знаю, що не добре в тести вставляти метод, але хочу з тобою порадитись де краще його помістити
+
     public static Stream<Arguments> negativeCasesCreatePet() {
         return Stream.of(
                 Arguments.of("empty pet name", petDTO().setName(null)),
@@ -50,26 +50,14 @@ public class PetTests {
         );
     }
     @ParameterizedTest
-    @MethodSource("negativeCasesCreatePet")
+    @MethodSource({"negativeCasesCreatePet"})
     public void post_AddNewPet_400(String testName, Pet petDTO) {
         Response response = PetMethod.addPet(petDTO);
         PetAssertions.verifyPetNotFound(response, 400);
     }
 
-
-   /* @Test
-    public void findPetsByStatusTest() {
-        PetStatus status = PetStatus.available;
-        List<Pet> pets = find_PetsByStatus(status);
-        Pet firstPet = pets.get(0);
-        System.out.println("First Pet ID: " + firstPet.getId());
-        System.out.println("First Pet Name: " + firstPet.getName());
-        System.out.println("First Pet Status: " + firstPet.getStatus());
-        PetAssertions.verifyAllPetsByStatus(pets, status);
-    }
-    */
    @ParameterizedTest
-   @EnumSource(value = PetStatus.class, mode = EnumSource.Mode.EXCLUDE, names = {"sold", "pending"})
+   @EnumSource(value = PetStatus.class)
    void findPetsByStatus(PetStatus status) {
        List<Pet> pets = find_PetsByStatus(status);
        Pet firstPet = pets.get(0);
@@ -120,14 +108,6 @@ public class PetTests {
         }
     }
 
-    /* @Test
-     public void deletePetTest_Negative() {
-         long nonExistentPetId = 123456789;
-         Response response = PetMethod.deletePet(nonExistentPetId);
-         PetAssertions.verifyPetNotFound(response, 404);
-     }
-
- }*/
     @ParameterizedTest
     @ValueSource(longs = {1, 2, 3})
     void deletePetTest_Negative(long id ) {

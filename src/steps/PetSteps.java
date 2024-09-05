@@ -1,23 +1,15 @@
 package steps;
 
 import Enums.PetStatus;
-import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import models.Category;
 import models.Pet;
 import methods.PetMethod;
 import models.Tag;
 import net.datafaker.Faker;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
 import static Enums.PetStatus.*;
-import static io.restassured.RestAssured.given;
 import static methods.PetMethod.*;
 
 public class PetSteps {
@@ -79,3 +71,4 @@ public class PetSteps {
                 .statusCode(200);
     }
 }
+

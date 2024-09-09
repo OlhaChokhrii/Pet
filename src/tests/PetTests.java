@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 
-//@Execution(ExecutionMode.CONCURRENT) or  ExecutionMode.SAME_THREAD
+//@Execution(ExecutionMode.CONCURRENT) or ExecutionMode.SAME_THREAD
 @DisplayName("Pet tests")
 public class PetTests {
 
